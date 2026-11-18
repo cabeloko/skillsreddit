@@ -1,4 +1,4 @@
-# Awesome AI Coding Skills [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+# Agent Skills Handbook
 
 > A hand-picked list of **agent skills, plugins and workflows** that make AI coding agents (Claude Code, Codex, Cursor, Copilot, Gemini CLI and more) plan better, design better and ship better code. Each entry includes what it does, who it's for and how to install it.
 
