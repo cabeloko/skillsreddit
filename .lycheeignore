@@ -1,0 +1,10 @@
+# Links the weekly check skips. One regex per line.
+
+# Badges: generated on the fly and rate-limited.
+^https://img\.shields\.io/
+
+# X blocks automated requests.
+^https://(x|twitter)\.com/
+
+# This repo's own pages: need a login or only exist after the first run.
+^https://github\.com/uveshm003/ai-dev-toolkit/(issues/new|actions)

@@ -1,0 +1,84 @@
+name: Link check
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday, 06:00 UTC
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "**.md"
+      - ".lycheeignore"
+      - ".github/workflows/link-check.yml"
+      - ".github/scripts/check-repos.sh"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check links
+        id: lychee
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --no-progress
+            --max-retries 3
+            --retry-wait-time 10
+            --accept '200..=299,429'
+            README.md CONTRIBUTING.md
+          output: lychee-report.md
+          fail: false
+
+      - name: Check for archived, moved or deleted repos
+        id: repos
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/check-repos.sh README.md CONTRIBUTING.md > repo-report.md
+
+      - name: Open or update an issue
+        if: >-
+          github.event_name != 'pull_request' &&
+          (steps.lychee.outputs.exit_code != '0' || steps.repos.outcome == 'failure')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          LYCHEE_EXIT: ${{ steps.lychee.outputs.exit_code }}
+        run: |
+          {
+            echo "The weekly link check found problems. Details: [run log]($RUN_URL)."
+            echo
+            if [ -s repo-report.md ]; then
+              echo "## Repos"
+              echo
+              cat repo-report.md
+              echo
+            fi
+            if [ "$LYCHEE_EXIT" != "0" ]; then
+              echo "## Links"
+              echo
+              cat lychee-report.md
+            fi
+          } > issue.md
+
+          gh label create broken-link --color d73a4a \
+            --description "Dead link, archived repo or wrong install command" --force
+
+          existing=$(gh issue list --label broken-link --state open \
+            --search "in:title Link check found problems" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file issue.md
+          else
+            gh issue create --title "Link check found problems" --label broken-link --body-file issue.md
+          fi
+
+      - name: Fail if anything is broken
+        if: steps.lychee.outputs.exit_code != '0' || steps.repos.outcome == 'failure'
+        run: |
+          cat repo-report.md
+          exit 1

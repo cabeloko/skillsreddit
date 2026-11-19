@@ -1,0 +1,91 @@
+name: Suggest a tool
+description: Recommend a skill, plugin, MCP server or workflow for the list.
+title: "[Tool]: "
+labels: ["new-tool"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the tip! Entries need to be open source, actively maintained and something you've actually used.
+        See [CONTRIBUTING.md](https://github.com/uveshm003/ai-dev-toolkit/blob/main/CONTRIBUTING.md) for what gets in.
+
+  - type: input
+    id: repo
+    attributes:
+      label: Repo link
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+
+  - type: dropdown
+    id: section
+    attributes:
+      label: Section
+      options:
+        - Full workflows
+        - Plan and spec
+        - Code
+        - Context and memory
+        - Design and UI
+        - Test and debug
+        - Review and ship
+        - Security
+        - Deploy and infrastructure
+        - Cost and usage
+        - Docs, diagrams and visuals
+        - Writing
+        - Mobile
+        - Career
+        - Learning
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What does it do?
+      description: One or two factual sentences. No marketing language.
+    validations:
+      required: true
+
+  - type: textarea
+    id: usage
+    attributes:
+      label: How have you used it?
+      description: What did it make better, and compared with what? If it overlaps with something already listed, say why it's better.
+    validations:
+      required: true
+
+  - type: input
+    id: install
+    attributes:
+      label: Install command
+      description: Copy it from the project's own README.
+      placeholder: npx skills add owner/repo
+
+  - type: input
+    id: agents
+    attributes:
+      label: Agents it works with
+      description: As stated in the project's README.
+      placeholder: Claude Code, Codex, Cursor
+
+  - type: checkboxes
+    id: tags
+    attributes:
+      label: Tags
+      options:
+        - label: Official (from the platform's own team or an established company)
+        - label: Needs an API key or token beyond the agent itself
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: It's open source and has been updated in the last few months.
+          required: true
+        - label: It isn't already on the list.
+          required: true
+        - label: I built it or work on it.

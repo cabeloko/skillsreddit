@@ -1,0 +1,33 @@
+name: Report a broken link
+description: A dead link, an archived repo, or an install command that no longer works.
+title: "[Broken]: "
+labels: ["broken-link"]
+body:
+  - type: input
+    id: entry
+    attributes:
+      label: Which entry?
+      placeholder: e.g. Superpowers
+    validations:
+      required: true
+
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What's wrong?
+      options:
+        - The link is dead
+        - The repo is archived or abandoned
+        - The install command doesn't work
+        - The description or tags are out of date
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What did you see? Paste the error, or link to the project's current instructions.
+    validations:
+      required: true
